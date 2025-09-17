@@ -436,9 +436,101 @@
         
 
         <div id="food-database" class="content-section d-none">
-          <h3>Section 3 - Food Database</h3>
-          <p>Content for food database goes here.</p>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Food Database</h3>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addFoodModal">
+              <i class="fas fa-plus"></i> Add Food
+            </button>
+          </div>
+        
+          <!-- Filters -->
+          <div class="row mb-3 g-2">
+            <div class="col-md-6">
+              <input type="text" id="foodDbSearch" class="form-control" placeholder="Search by dish name..." oninput="filterFoodDatabase()">
+            </div>
+            <div class="col-md-4">
+              <select id="foodDbZoneFilter" class="form-select" onchange="filterFoodDatabase()">
+                <option value="">All Zones</option>
+                <option value="North">North</option>
+                <option value="South">South</option>
+                <option value="East">East</option>
+                <option value="West">West</option>
+              </select>
+            </div>
+          </div>
+        
+          <!-- Food Table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Dish Name</th>
+                  <th>Calories (kcal)</th>
+                  <th>Protein (g)</th>
+                  <th>Carbs (g)</th>
+                  <th>Fats (g)</th>
+                  <th>Zone</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="foodDbTableBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
         </div>
+        
+        <!-- Add/Edit Food Modal -->
+        <div class="modal fade" id="addFoodModal" tabindex="-1" aria-labelledby="addFoodModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="foodForm" onsubmit="saveFood(event)">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addFoodModalLabel">Add Food Item</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="hidden" id="foodId">
+                  <div class="mb-3">
+                    <label class="form-label">Dish Name</label>
+                    <input type="text" class="form-control" id="foodName" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Calories (kcal)</label>
+                    <input type="number" class="form-control" id="foodCalories" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Protein (g)</label>
+                    <input type="number" class="form-control" id="foodProtein" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Carbs (g)</label>
+                    <input type="number" class="form-control" id="foodCarbs" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Fats (g)</label>
+                    <input type="number" class="form-control" id="foodFats" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Zone</label>
+                    <select id="foodZone" class="form-select" required>
+                      <option value="">Select Zone</option>
+                      <option value="North">North</option>
+                      <option value="South">South</option>
+                      <option value="East">East</option>
+                      <option value="West">West</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Save</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
 
         <div id="appointments" class="content-section d-none">
           <h3>Section 4 - Appointments</h3>

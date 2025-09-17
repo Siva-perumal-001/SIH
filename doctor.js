@@ -565,3 +565,102 @@ function printDietChart() {
   win.focus();
   setTimeout(() => { win.print(); win.close(); }, 400);
 }
+
+// ---------------- Food Database ----------------
+let foodDatabase = [
+  { id: 1, name: "Brown Rice", calories: 216, protein: 5, carbs: 45, fats: 2, zone: "South" },
+  { id: 2, name: "Chapathi", calories: 120, protein: 3, carbs: 25, fats: 1, zone: "North" },
+  { id: 3, name: "Dosa", calories: 133, protein: 2.7, carbs: 17, fats: 5, zone: "South" },
+  { id: 4, name: "Upma", calories: 150, protein: 3, carbs: 30, fats: 4, zone: "South" },
+  { id: 5, name: "Poha", calories: 130, protein: 2.5, carbs: 28, fats: 1.5, zone: "West" }
+];
+
+function renderFoodDatabase(filtered = foodDatabase) {
+  const tbody = document.getElementById("foodDbTableBody");
+  tbody.innerHTML = "";
+  filtered.forEach(food => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${food.name}</td>
+      <td>${food.calories}</td>
+      <td>${food.protein}</td>
+      <td>${food.carbs}</td>
+      <td>${food.fats}</td>
+      <td>${food.zone}</td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="editFood(${food.id})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteFood(${food.id})">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Filter table
+function filterFoodDatabase() {
+  const query = document.getElementById("foodDbSearch").value.toLowerCase();
+  const zone = document.getElementById("foodDbZoneFilter").value;
+  const filtered = foodDatabase.filter(f => 
+    f.name.toLowerCase().includes(query) && (!zone || f.zone === zone)
+  );
+  renderFoodDatabase(filtered);
+}
+
+// Save food (add or edit)
+function saveFood(event) {
+  event.preventDefault();
+  const id = document.getElementById("foodId").value;
+  const foodItem = {
+    id: id ? parseInt(id) : Date.now(), // New food gets unique id
+    name: document.getElementById("foodName").value,
+    calories: parseFloat(document.getElementById("foodCalories").value),
+    protein: parseFloat(document.getElementById("foodProtein").value),
+    carbs: parseFloat(document.getElementById("foodCarbs").value),
+    fats: parseFloat(document.getElementById("foodFats").value),
+    zone: document.getElementById("foodZone").value
+  };
+
+  if(id) {
+    // Editing existing food
+    const index = foodDatabase.findIndex(f => f.id == id);
+    foodDatabase[index] = foodItem;
+  } else {
+    // Adding new food
+    foodDatabase.push(foodItem);
+  }
+
+  // Reset form id to prevent overwriting next add
+  document.getElementById("foodId").value = "";
+  document.getElementById("foodForm").reset();
+
+  renderFoodDatabase();
+  bootstrap.Modal.getInstance(document.getElementById('addFoodModal')).hide();
+}
+
+// Edit food
+function editFood(id) {
+  const food = foodDatabase.find(f => f.id === id);
+  document.getElementById("foodId").value = food.id;
+  document.getElementById("foodName").value = food.name;
+  document.getElementById("foodCalories").value = food.calories;
+  document.getElementById("foodProtein").value = food.protein;
+  document.getElementById("foodCarbs").value = food.carbs;
+  document.getElementById("foodFats").value = food.fats;
+  document.getElementById("foodZone").value = food.zone;
+  const modal = new bootstrap.Modal(document.getElementById('addFoodModal'));
+  modal.show();
+}
+
+// Delete food
+function deleteFood(id) {
+  if(confirm("Are you sure you want to delete this food item?")) {
+    foodDatabase = foodDatabase.filter(f => f.id !== id);
+    renderFoodDatabase();
+  }
+}
+
+// Initialize food database on page load
+document.addEventListener("DOMContentLoaded", () => {
+  renderFoodDatabase();
+});
+
