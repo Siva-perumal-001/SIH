@@ -142,9 +142,199 @@
 
         <!-- Other Sections -->
         <div id="patients" class="content-section d-none">
-          <h3>Section 1 - Patients</h3>
-          <p>Content related to patients goes here.</p>
-        </div>
+          <!-- Patient List View -->
+          <div id="patient-list-view">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3>Patient Management</h3>
+              <button class="btn btn-primary" onclick="showAddPatientForm()">Add New Patient</button>
+            </div>
+        
+            <!-- Search and Filters -->
+            <div class="row mb-3">
+              <div class="col-md-4 mb-2">
+                <input type="text" id="patient-search" class="form-control" placeholder="Search by name" oninput="filterPatients()">
+              </div>
+              <div class="col-md-3 mb-2">
+                <select id="filter-gender" class="form-select" onchange="filterPatients()">
+                  <option value="">Filter by Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div class="col-md-3 mb-2">
+                <select id="filter-dosha" class="form-select" onchange="filterPatients()">
+                  <option value="">Filter by Dosha</option>
+                  <option value="Vata">Vata</option>
+                  <option value="Pitta">Pitta</option>
+                  <option value="Kapha">Kapha</option>
+                </select>
+              </div>
+            </div>
+        
+            <!-- Patient Table -->
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Last Visit</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="patient-table-body">
+                  <!-- Rows populated dynamically by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        
+          <!-- Patient Profile View -->
+          <div id="patient-profile-view" class="d-none">
+            <button class="btn btn-outline-secondary mb-3" onclick="showPatientList()">
+              <i class="fas fa-arrow-left"></i> Back to Patient List
+            </button>
+        
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4 id="profile-name">Patient Name</h4>
+              <button class="btn btn-primary">View Chart</button>
+            </div>
+        
+            <!-- Tabs -->
+            <ul class="nav nav-tabs mb-3" id="patientTab" role="tablist">
+              <li class="nav-item">
+                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button">Profile Summary</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="diet-tab" data-bs-toggle="tab" data-bs-target="#diet" type="button">Diet Charts</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button">Doctor's Notes</button>
+              </li>
+            </ul>
+        
+            <div class="tab-content">
+              <!-- Profile Summary -->
+              <div class="tab-pane fade show active" id="summary">
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Name:</strong> <span id="summary-name"></span></p>
+                    <p><strong>Age:</strong> <span id="summary-age"></span></p>
+                    <p><strong>Gender:</strong> <span id="summary-gender"></span></p>
+                    <p><strong>Lifestyle:</strong> <span id="summary-lifestyle"></span></p> <!-- NEW -->
+                    <p><strong>Family History:</strong> <span id="summary-history"></span></p> <!-- NEW -->
+                  </div>
+                  <div class="col-md-6">
+                    <div class="card p-3">
+                      <h6>Ayurvedic Profile</h6>
+                      <p><strong>Prakriti:</strong> <span id="summary-prakriti"></span></p>
+                      <p><strong>Vikriti:</strong> <span id="summary-vikriti"></span></p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-3">
+                  <h6>Chief Complaint</h6>
+                  <p id="summary-complaint"></p>
+                </div>
+                
+              </div>
+
+              <!-- Diet Charts -->
+              <div class="tab-pane fade" id="diet">
+                <h6>Past Diet Charts</h6>
+                <ul class="list-group">
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    2025-09-01
+                    <div>
+                      <button class="btn btn-sm btn-primary">View</button>
+                      <button class="btn btn-sm btn-warning">Edit</button>
+                      <button class="btn btn-sm btn-secondary">Print</button>
+                    </div>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    2025-08-15
+                    <div>
+                      <button class="btn btn-sm btn-primary">View</button>
+                      <button class="btn btn-sm btn-warning">Edit</button>
+                      <button class="btn btn-sm btn-secondary">Print</button>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+        
+              <!-- Doctor's Notes -->
+              <div class="tab-pane fade" id="notes">
+                <h6>Private Notes</h6>
+                <textarea class="form-control mb-3" rows="5" placeholder="Enter your notes here..."></textarea>
+                <button class="btn btn-success">Save Notes</button>
+              </div>
+            </div>
+          </div>
+        
+          <!-- Add New Patient View -->
+          <div id="add-patient-view" class="d-none">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h4>Add New Patient</h4>
+              <button class="btn btn-outline-secondary" onclick="showPatientList()">Back</button>
+            </div>
+            <form id="add-patient-form" onsubmit="saveNewPatient(event)">
+              <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" id="new-name" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Age</label>
+                <input type="number" class="form-control" id="new-age" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Gender</label>
+                <select class="form-select" id="new-gender" required>
+                  <option value="">Select</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Daily lifestyle</label>
+                <select class="form-select" id="new-lifestyle" required>
+                  <option value="">Select</option>
+                  <option>High (medidation and diet maintain)</option>
+                  <option>Moderate (medidation and diet maintain)</option>
+                  <option>low (not a proper plan)</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Prakriti</label>
+                <select class="form-select" id="new-prakriti" required>
+                  <option value="">Select</option>
+                  <option>Vata</option>
+                  <option>Pitta</option>
+                  <option>Kapha</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Vikriti</label>
+                <select class="form-select" id="new-vikriti" required>
+                  <option value="">Select</option>
+                  <option>Vata</option>
+                  <option>Pitta</option>
+                  <option>Kapha</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Chief Complaint</label>
+                <textarea class="form-control" id="new-complaint" rows="3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Do you have any family history of Chronic diseases? (diabetis, asthma , etc..)</label>
+                <textarea class="form-control" id="disease-history" rows="3" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Save Patient</button>
+              <button type="button" class="btn btn-secondary" onclick="showPatientList()">Cancel</button>
+            </form>
+          </div>
+        </div>        
 
         <div id="create-diet" class="content-section d-none">
           <h3>Section 2 - Create Diet Chart</h3>
