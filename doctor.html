@@ -336,10 +336,104 @@
           </div>
         </div>        
 
-        <div id="create-diet" class="content-section d-none">
-          <h3>Section 2 - Create Diet Chart</h3>
-          <p>Content for creating diet charts goes here.</p>
+        <div id="create-diet" class="content-section d-none container-fluid py-3">
+          <!-- Patient Context Header -->
+          <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded shadow-sm mb-4">
+            <!-- Patient Selector -->
+            <div class="w-50">
+              <label for="patientSelect" class="form-label fw-bold">Select Patient</label>
+              <select id="patientSelect" class="form-select" onchange="handlePatientChange()">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+        
+            <!-- Patient Profile Card -->
+            <div class="card p-3 shadow-sm" style="min-width: 250px;">
+              <h6 class="fw-bold">Patient Profile</h6>
+              <p class="mb-1"><strong>Name:</strong> <span id="patientName">-</span></p>
+              <p class="mb-1"><strong>Vikriti:</strong> <span id="patientVikriti">-</span></p>
+              <p class="mb-1"><strong>Disease:</strong> <span id="patientDisease">-</span></p>
+            </div>
+          </div>
+        
+          <div class="row">
+            <!-- Food Selection Table -->
+            <div class="col-md-8 mb-4">
+              <!-- Search and Filter Controls -->
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+                <input type="text" id="foodSearch" class="form-control w-50 mb-2 mb-md-0" placeholder="Search foods..." oninput="filterFoods()">
+                <select id="zoneFilter" class="form-select w-25" onchange="filterFoods()">
+                  <option value="">All Zones</option>
+                  <option value="North">North</option>
+                  <option value="South">South</option>
+                  <option value="East">East</option>
+                  <option value="West">West</option>
+                </select>
+              </div>
+        
+              <!-- Food Table -->
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Dish Name</th>
+                      <th>Calories (kcal)</th>
+                      <th>Protein (g)</th>
+                      <th>Carbs (g)</th>
+                      <th>Fats (g)</th>
+                      <th>Zone</th>
+                      <th>Add</th>
+                    </tr>
+                  </thead>
+                  <tbody id="foodTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        
+            <!-- Diet Chart Builder Sidebar -->
+            <div class="col-md-4">
+              <div class="card shadow-sm p-3 sticky-top" style="top: 15px;">
+                <h5 class="fw-bold mb-3">Diet Chart Builder</h5>
+        
+                <!-- Meal Sections -->
+                <div id="mealSections">
+                  <div class="mb-3">
+                    <h6 class="fw-bold">Breakfast</h6>
+                    <div id="breakfast" class="meal-dropzone border rounded p-2"></div>
+                  </div>
+                  <div class="mb-3">
+                    <h6 class="fw-bold">Lunch</h6>
+                    <div id="lunch" class="meal-dropzone border rounded p-2"></div>
+                  </div>
+                  <div class="mb-3">
+                    <h6 class="fw-bold">Dinner</h6>
+                    <div id="dinner" class="meal-dropzone border rounded p-2"></div>
+                  </div>
+                  <div class="mb-3">
+                    <h6 class="fw-bold">Snacks</h6>
+                    <div id="snacks" class="meal-dropzone border rounded p-2"></div>
+                  </div>
+                </div>
+        
+                <!-- Save Button -->
+                <button class="btn btn-success w-100 mt-3" onclick="saveDietChart()">
+                  <i class="fas fa-save"></i> Save Diet Chart
+                </button>
+              </div>
+            </div>
+          </div>
+        
+          <!-- View Saved Diet Charts -->
+          <div class="mt-5">
+            <h4 class="fw-bold">Saved Diet Charts</h4>
+            <div id="savedDietCharts" class="mt-3">
+              <p class="text-muted">No diet charts saved yet.</p>
+            </div>
+          </div>
         </div>
+        
 
         <div id="food-database" class="content-section d-none">
           <h3>Section 3 - Food Database</h3>
