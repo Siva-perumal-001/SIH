@@ -22,6 +22,12 @@ function showSection(sectionId) {
     initPatientList();
     showPatientList();
   }
+
+  // If appointments section is opened, render the lists
+  if (sectionId === "appointments") {
+    renderCalendar();
+    renderList();
+  }
 }
 
 links.forEach(link => {
@@ -197,6 +203,10 @@ function saveNewPatient(event) {
   patients.push(newPatient);
   initPatientList();
   showPatientList();
+
+  document.getElementById('viewProfileBtn').addEventListener('click', function () {
+    showSection('patients');
+});
 
   // Reset form
   document.getElementById("add-patient-form").reset();
@@ -412,7 +422,7 @@ function renderSavedCharts() {
   }
 
   const lists = savedDietCharts[patientId];
-  const patient = dietPatients.find(p => p.id == patientId) || { name: 'Unknown' };
+  const patient = dietPatients.find(p => p.id == patientId) || { name: 'Unknown', vikriti: '-', disease: '-' };
 
   if (!lists || lists.length === 0) {
     container.innerHTML = `<p class="text-muted">No diet charts saved yet for <strong>${patient.name}</strong>.</p>`;
@@ -664,3 +674,312 @@ document.addEventListener("DOMContentLoaded", () => {
   renderFoodDatabase();
 });
 
+// ========== DATA ==========
+let appointmentsData = [
+  {
+    id: 1,
+    patientName: "John Smith",
+    date: "2025-09-17",
+    time: "10:00 AM",
+    reason: "Follow-up for chronic back pain"
+  },
+  {
+    id: 2,
+    patientName: "Jane Doe",
+    date: "2025-09-20",
+    time: "02:30 PM",
+    reason: "New patient consultation"
+  },
+  {
+    id: 3,
+    patientName: "Michael Johnson",
+    date: "2025-09-25",
+    time: "11:00 AM",
+    reason: "Ayurvedic diet consultation"
+  }
+];
+
+// ========== VIEW TOGGLE ==========
+const calendarViewBtn = document.getElementById('calendarViewBtn');
+const listViewBtn = document.getElementById('listViewBtn');
+const calendarView = document.getElementById('calendarView');
+const listView = document.getElementById('listView');
+
+calendarViewBtn.addEventListener('click', () => {
+  calendarView.classList.remove('d-none');
+  listView.classList.add('d-none');
+  calendarViewBtn.classList.add('active');
+  listViewBtn.classList.remove('active');
+});
+
+listViewBtn.addEventListener('click', () => {
+  listView.classList.remove('d-none');
+  calendarView.classList.add('d-none');
+  listViewBtn.classList.add('active');
+  calendarViewBtn.classList.remove('active');
+});
+
+// ========== MODAL CONTROLS ==========
+const addAppointmentBtn = document.getElementById('addAppointmentBtn');
+const addAppointmentModal = new bootstrap.Modal(document.getElementById('addAppointmentModal'));
+
+addAppointmentBtn.addEventListener('click', () => addAppointmentModal.show());
+
+// ========== FORM SUBMISSION ==========
+const saveAppointmentBtn = document.getElementById('saveAppointmentBtn');
+saveAppointmentBtn.addEventListener('click', () => {
+  const patientName = document.getElementById('patientNameSelect').value;
+  const date = document.getElementById('appointmentDate').value;
+  const time = document.getElementById('appointmentTime').value;
+  const reason = document.getElementById('appointmentReason').value;
+
+  if (!patientName || !date || !time || !reason) {
+    return alert('All fields required');
+  }
+
+  const newAppointment = {
+    id: Date.now(),
+    patientName,
+    date,
+    time,
+    reason
+  };
+
+  appointmentsData.push(newAppointment);
+
+  renderCalendar();
+  renderList();
+  addAppointmentModal.hide();
+  document.getElementById('addAppointmentForm').reset();
+});
+
+// ========== RENDER FUNCTIONS ==========
+function renderCalendar() {
+  const calendarGrid = document.getElementById('calendarGrid');
+  calendarGrid.innerHTML = '';
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dayAppointments = appointmentsData.filter(
+      a => new Date(a.date).getDate() === d && new Date(a.date).getMonth() === month && new Date(a.date).getFullYear() === year
+    );
+
+    let apptHtml = '';
+    dayAppointments.forEach(a => {
+      apptHtml += `<div class="appointment-item" onclick="showDetails(${a.id})">${a.time} - ${a.patientName}</div>`;
+    });
+
+    const col = document.createElement('div');
+    col.className = 'col-md-2 calendar-day';
+
+    // Add this line to check for appointments and apply the new class
+    if (dayAppointments.length > 0) {
+      col.classList.add('has-appointment');
+    }
+
+    col.innerHTML = `<h6>${d}</h6>${apptHtml}`;
+    calendarGrid.appendChild(col);
+  }
+}
+
+function renderList() {
+  const tbody = document.getElementById('appointmentsTableBody');
+  tbody.innerHTML = '';
+  appointmentsData.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${a.patientName}</td>
+      <td>${a.date}</td>
+      <td>${a.time}</td>
+      <td>${a.reason}</td>
+      <td><button class="btn btn-sm btn-info" onclick="showDetails(${a.id})">View Details</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// ========== SHOW DETAILS ==========
+window.showDetails = function(id) {
+  const appt = appointmentsData.find(a => a.id === id);
+  if (!appt) return;
+  document.getElementById('detailPatientName').innerText = appt.patientName;
+  document.getElementById('detailDate').innerText = appt.date;
+  document.getElementById('detailTime').innerText = appt.time;
+  document.getElementById('detailReason').innerText = appt.reason;
+
+  const detailsModal = new bootstrap.Modal(document.getElementById('appointmentDetailsModal'));
+  detailsModal.show();
+}
+
+// Global user settings object
+let userSettings = {
+  name: "Dr. Varsha",
+  title: "Nutrition Specialist",
+  bio: "Helping patients achieve a balanced and healthy lifestyle.",
+  defaultPage: "dashboard",
+  darkModeEnabled: false
+};
+
+// Load settings into the form
+function loadSettings() {
+  document.getElementById("doctorName").value = userSettings.name;
+  document.getElementById("doctorTitle").value = userSettings.title;
+  document.getElementById("doctorBio").value = userSettings.bio;
+  document.getElementById("defaultPage").value = userSettings.defaultPage;
+  document.getElementById("darkModeToggle").checked = userSettings.darkModeEnabled;
+
+  document.body.classList.toggle("dark-mode", userSettings.darkModeEnabled);
+}
+
+// Show "Saved" alert
+function showSaveAlert() {
+  const alertBox = document.getElementById("saveAlert");
+  alertBox.classList.remove("d-none");
+  setTimeout(() => {
+    alertBox.classList.add("d-none");
+  }, 2000);
+}
+
+// Profile form submit
+document.getElementById("profileForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  userSettings.name = document.getElementById("doctorName").value;
+  userSettings.title = document.getElementById("doctorTitle").value;
+  userSettings.bio = document.getElementById("doctorBio").value;
+  showSaveAlert();
+});
+
+// Preferences form submit
+document.getElementById("preferencesForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  userSettings.defaultPage = document.getElementById("defaultPage").value;
+  userSettings.darkModeEnabled = document.getElementById("darkModeToggle").checked;
+
+  document.body.classList.toggle("dark-mode", userSettings.darkModeEnabled);
+  showSaveAlert();
+});
+
+// Sidebar Navigation
+document.addEventListener("DOMContentLoaded", () => {
+  loadSettings();
+
+  const settingsLink = document.getElementById("settingsLink");
+  const settingsPage = document.getElementById("settings");
+
+  // All main content sections
+  const allSections = document.querySelectorAll("#dashboard, #appointments, #dietchart, #reports, #settings");
+
+  // Sidebar click event
+  settingsLink.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    // Hide all other sections
+    allSections.forEach(section => section.classList.add("d-none"));
+
+    // Show only settings section
+    settingsPage.classList.remove("d-none");
+
+    // Highlight active link
+    document.querySelectorAll(".nav-link").forEach(link => link.classList.remove("active"));
+    this.classList.add("active");
+  });
+});
+
+// ========== REPORTS LOGIC ==========
+
+// Demo reports data
+let reportsData = [
+  { id: 1, patientName: 'John Doe', date: '2025-09-15', reportType: 'Blood Test', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' },
+  { id: 2, patientName: 'Jane Smith', date: '2025-09-16', reportType: 'X-Ray', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' },
+  { id: 3, patientName: 'Mike Johnson', date: '2025-09-17', reportType: 'MRI', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' }
+];
+
+const reportsTableBody = document.querySelector('#reportsTable tbody');
+const addReportModalEl = document.getElementById('addReportModal');
+const addReportModal = new bootstrap.Modal(addReportModalEl);
+const viewReportModalEl = document.getElementById('viewReportModal');
+const viewReportModal = new bootstrap.Modal(viewReportModalEl);
+const addReportForm = document.getElementById('addReportForm');
+const addReportBtn = document.getElementById('addReportBtn');
+
+// Render table
+function renderReports() {
+  reportsTableBody.innerHTML = '';
+  reportsData.forEach((report, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${report.patientName}</td>
+      <td>${report.date}</td>
+      <td>${report.reportType}</td>
+      <td>
+        <button class="btn btn-info btn-sm" onclick="viewReport(${report.id})">View</button>
+        <button class="btn btn-primary btn-sm" onclick="downloadReport(${report.id})">Download</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReport(${report.id})">Delete</button>
+      </td>
+    `;
+    reportsTableBody.appendChild(tr);
+  });
+}
+
+// Show Add Report modal
+addReportBtn.addEventListener('click', () => {
+  addReportForm.reset();
+  addReportModal.show();
+});
+
+// Handle Add Report form
+addReportForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const patientName = document.getElementById('patientName').value.trim();
+  const reportType = document.getElementById('reportType').value.trim();
+  const reportDate = document.getElementById('reportDate').value;
+  
+  if (patientName && reportType && reportDate) {
+    reportsData.push({
+      id: Date.now(), // Generate a unique ID
+      patientName,
+      date: reportDate,
+      reportType,
+      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+    });
+    renderReports();
+    addReportModal.hide();
+  }
+});
+
+// View Report
+window.viewReport = function(id) {
+  const report = reportsData.find(r => r.id === id);
+  if (report) {
+    document.getElementById('viewReportFrame').src = report.url;
+    viewReportModal.show();
+  }
+}
+
+// Download Report
+window.downloadReport = function(id) {
+  const report = reportsData.find(r => r.id === id);
+  if (report) {
+    const a = document.createElement('a');
+    a.href = report.url;
+    a.download = `${report.patientName}_${report.reportType}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+}
+
+// Delete Report
+window.deleteReport = function(id) {
+  if (confirm('Are you sure you want to delete this report?')) {
+    reportsData = reportsData.filter(r => r.id !== id);
+    renderReports();
+  }
+}
+
+// Initial render of the reports table
+renderReports();

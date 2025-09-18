@@ -207,3 +207,56 @@ body {
   font-size: 13px;
 }
 
+/* appointments.css */
+.calendar-day {
+  border: 1px solid #ddd;
+  min-height: 100px;
+  padding: 5px;
+  margin-bottom: 5px;
+}
+.calendar-day h6 {
+  font-size: 0.9rem;
+}
+.appointment-item {
+  font-size: 0.8rem;
+  background-color: #e9ecef;
+  margin: 2px 0;
+  padding: 2px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.has-appointment {
+  background-color: #d1f7e0; /* A light green background */
+  color: #000; /* Black text for readability */
+  border: 1px solid #28a745 !important; /* A darker green border */
+}
+
+.dark-mode {
+  background-color: #1e1e1e !important;
+  color: #f8f9fa !important;
+}
+
+.dark-mode .card {
+  background-color: #2c2c2c;
+  border-color: #444;
+}
+
+.dark-mode .card-header {
+  background-color: #444 !important;
+}
+
+.dark-mode .form-control,
+.dark-mode .form-select {
+  background-color: #333;
+  color: #f8f9fa;
+  border: 1px solid #555;
+}
+
+#reports .modal-body iframe {
+  border: none;
+}
+
+#reportsTable button {
+  margin-right: 5px;
+}
